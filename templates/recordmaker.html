@@ -21,6 +21,15 @@
                     <input type="checkbox" id="gif" name="gif">
                 </div>
                 <div class="form-group mb-3">
+                    <label for="gif">Ping pong:</label>
+                    <input type="checkbox" id="pingpong" name="pingpong">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="gif">Frames per drawing:</label>
+                    <input type="range" id="fpd" name="fpd" min="1" max="32" value="1" oninput="this.nextElementSibling.value = this.value">
+                    <output>1</output>
+                </div>
+                <div class="form-group mb-3">
                     <label class="form-label" for="fileUpload">Images</label>
                     <input type="file" class="form-control" name="file" multiple="" id="FileUpload">
                 </div>

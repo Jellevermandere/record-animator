@@ -56,14 +56,23 @@ def add_session():
             for file in uploaded_files:
                 file_bytes = np.fromfile(file, np.uint8)
                 imageFile = cv2.imdecode(file_bytes, cv2.IMREAD_UNCHANGED)
-                nrOfImages +=1
                 #print(imageFile.shape)
-                images.append(imageFile)
+                for i in range(int(request.form.get("fpd"))):
+                    images.append(imageFile)
+                    nrOfImages +=1
+            if(request.form.get("pingpong")):
+                print("reversing")
+                reverseImages = images.copy()
+                reverseImages.reverse()
+                for i in range(nrOfImages):
+                    images.append(reverseImages[i])
+                nrOfImages *=2
 
             bgColor = request.form.get("favcolor")
             bgColorRgb = ImageColor.getcolor(bgColor, "RGB")
             blankRecordSize = int(images[0].shape[0]*2)
             img = rc.create_blank_record(blankRecordSize, bgColorRgb)
+
             result = rc.place_pies(img, images)
             result = cv2.cvtColor(result, cv2.COLOR_BGRA2RGBA)
             if(request.form.get("gif")):
@@ -78,4 +87,4 @@ def add_session():
         return render_template('recordmaker.html')
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=3000)
