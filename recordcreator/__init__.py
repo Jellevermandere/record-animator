@@ -142,5 +142,4 @@ def save_record_gif(recordImage:np.array, frames:int = 32, outputPath:str = 'out
     for i in range(frames):
         image_lst.append(recordImage)
         recordImage = rotate_image(recordImage,360.0/frames)
-
-    imageio.mimsave(outputPath, image_lst, duration=duration)
+    imageio.mimsave(outputPath, image_lst, duration=duration, loop = 0)
