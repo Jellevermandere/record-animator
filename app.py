@@ -5,12 +5,12 @@
 import os
 import numpy as np
 import cv2
-from flask import Flask, flash, request, redirect, url_for, render_template, make_response
+from flask import Flask, flash, request, redirect, url_for, render_template, make_response, send_file
 from werkzeug.utils import secure_filename
 import requests
 import recordcreator as rc
 from PIL import ImageColor
-
+import io
 
 UPLOAD_FOLDER = "/rawData"
 ALLOWED_EXTENSIONS = {'png', 'PNG'}
@@ -52,18 +52,23 @@ def add_session():
             return redirect(request.url)
         else:
             images = []
+            nrOfImages = 0
             for file in uploaded_files:
                 file_bytes = np.fromfile(file, np.uint8)
                 imageFile = cv2.imdecode(file_bytes, cv2.IMREAD_UNCHANGED)
-                print(imageFile.shape)
+                nrOfImages +=1
+                #print(imageFile.shape)
                 images.append(imageFile)
 
             bgColor = request.form.get("favcolor")
             bgColorRgb = ImageColor.getcolor(bgColor, "RGB")
             blankRecordSize = int(images[0].shape[0]*2)
             img = rc.create_blank_record(blankRecordSize, bgColorRgb)
-            img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
             result = rc.place_pies(img, images)
+            result = cv2.cvtColor(result, cv2.COLOR_BGRA2RGBA)
+            if(request.form.get("gif")):
+                rc.save_record_gif(result, nrOfImages, "output/animatedRecord.gif")
+                return send_file('output/animatedRecord.gif')
             retval, buffer = cv2.imencode('.png', result)
             response = make_response(buffer.tobytes())
             response.headers['Content-Type'] = 'image/png'
